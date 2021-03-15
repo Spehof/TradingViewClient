@@ -56,6 +56,11 @@ def cli_args():
     return args
 
 
+def validate_format(tickers):
+    # TODO: write checking format tickers
+    return tickers
+
+
 def ping():
     # TODO: write getting account name
     pass
@@ -102,7 +107,8 @@ def add_tickers(tickers):
     if add_response.status_code == 200:
         print(add_response.text)
     else:
-        print(f"{b_colors.FAIL}Warning: \nSomething goes wrong! Please use -h for help and try again.{b_colors.ENDC}")
+        print(
+            f"{b_colors.FAIL}Warning: \nSomething goes wrong! Response status: " + add_response.status_code + "\nPlease use -h for help and try again.{b_colors.ENDC}")
 
 
 def get_current_tickers():
@@ -112,6 +118,7 @@ def get_current_tickers():
 
 
 def delete_tickers():
+    # TODO: write delete tickers
     pass
 
 
@@ -121,10 +128,11 @@ def main():
 
     if cli_args().load:
         if not sys.stdin.isatty():
-            add_tickers(json.load(sys.stdin))
+            add_tickers(validate_format(json.load(sys.stdin)))
         else:
             print(
-                f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC}")
+                f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
+            )
 
     if cli_args().free:
         delete_tickers(get_current_tickers())
