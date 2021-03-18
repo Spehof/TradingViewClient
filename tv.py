@@ -103,12 +103,13 @@ def add_tickers(tickers):
         "x-language": "ru",
         "x-requested-with": "XMLHttpRequest"
     }
+    print(json.dumps(tickers))
     add_response = requests.post(url_adding, headers=adding_headers, data=json.dumps(tickers))
+    print(add_response.text)
     if add_response.status_code == 200:
         print(add_response.text)
     else:
-        print(
-            f"{b_colors.FAIL}Warning: \nSomething goes wrong! Response status: " + add_response.status_code + "\nPlease use -h for help and try again.{b_colors.ENDC}")
+        print(f'Warning: \nSomething goes wrong! Response status: ' + str(add_response.status_code) + '\nPlease use -h for help and try again.')
 
 
 def get_current_tickers():
@@ -128,7 +129,11 @@ def main():
 
     if cli_args().load:
         if not sys.stdin.isatty():
+            # add_tickers(validate_format(sys.stdin.read()))
+
+            # add_tickers((json.loads(sys.stdin)))
             add_tickers(validate_format(json.load(sys.stdin)))
+
         else:
             print(
                 f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
