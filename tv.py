@@ -2,6 +2,8 @@ import requests
 import argparse
 import json
 import sys
+import re
+import time
 
 URL = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
 HEADERS = {
@@ -13,8 +15,7 @@ COOKIES = {
     'cookie': '_sp_id.cf1a=2b7f734a-07bf-4ee5-8a23-76e7da695f98.1613237271.142.1615548626.1615545423.6bf1ab93-5564-4f63-ada8-c04853135f59; sessionid=djidz6wslxnw510erzs6abto6o3bvk4u; tv_ecuid=eaf43895-763b-41ff-ba93-a5686abe49d4; png=eaf43895-763b-41ff-ba93-a5686abe49d4; etg=eaf43895-763b-41ff-ba93-a5686abe49d4; cachec=eaf43895-763b-41ff-ba93-a5686abe49d4; backend=test_backend; _sp_ses.cf1a=*'}
 
 parser = argparse.ArgumentParser(description='This is CLI client for tradingview.com',
-                                 epilog='Enjoy!'
-                                 )
+                                 epilog='Enjoy!')
 
 
 class b_colors:
@@ -56,16 +57,6 @@ def cli_args():
     return args
 
 
-def validate_format(tickers):
-    # TODO: write checking format tickers
-    return tickers
-
-
-def ping():
-    # TODO: write getting account name
-    pass
-
-
 def ticker_search(ticker: str):
     """
     ticker - ticker in string format for search
@@ -73,15 +64,45 @@ def ticker_search(ticker: str):
     """
     url_search = f'https://symbol-search.tradingview.com/symbol_search/?text={ticker}&hl=1&exchange=&lang=ru&type=&domain=production'
     suggestion_tickers = requests.get(url_search, headers=HEADERS, cookies=COOKIES)
-    tickers_dict: dict = json.loads(suggestion_tickers.text)
-    tickers_resp = []
-    for ticker_dict in tickers_dict:
-        symbol = ticker_dict['symbol'].replace(u'<em>', u'').replace(u'</em>', u'')
-        tickers_resp.append(ticker_dict['exchange'] + ':' + symbol)
-    return tickers_resp
+    if suggestion_tickers.status_code == 200:
+        tickers_dict: dict = json.loads(suggestion_tickers.text)
+        tickers_resp = []
+        for ticker_dict in tickers_dict:
+            symbol = ticker_dict['symbol'].replace(u'<em>', u'').replace(u'</em>', u'')
+            tickers_resp.append(ticker_dict['exchange'] + ":" + symbol)
+        return tickers_resp
+    else:
+        return []
 
 
-def add_tickers(tickers):
+def repair_format(invalid_ticker: str):
+    suggested_ticker = ticker_search(invalid_ticker)
+    time.sleep(0.3)
+    if suggested_ticker:
+        return suggested_ticker[0]
+    else:
+        print("SOMETHING WITH REQUEST REPAIRED TICKERS")
+        return ''
+
+
+def validate_format(tickers: list):
+    formatted_list = []
+    valid_tickers_pattern = re.compile("[A-Z]+:[A-Z]+")
+    for ticker in tickers:
+        if not valid_tickers_pattern.findall(ticker):
+            print('INVALID TICKER => ' + ticker)
+            formatted_list.append(repair_format(ticker))
+        else:
+            formatted_list.append(ticker)
+    return formatted_list
+
+
+def ping():
+    # TODO: write getting account name
+    pass
+
+
+def add_tickers(tickers: list):
     """
     tickers - list tickers with format exchange:symbol
     exp: add_tickers(["OANDA:XAUUSD", "BITSTAMP:BTCUSD"])
@@ -103,44 +124,69 @@ def add_tickers(tickers):
         "x-language": "ru",
         "x-requested-with": "XMLHttpRequest"
     }
-    print(json.dumps(tickers))
     add_response = requests.post(url_adding, headers=adding_headers, data=json.dumps(tickers))
     print(add_response.text)
     if add_response.status_code == 200:
         print(add_response.text)
     else:
-        print(f'Warning: \nSomething goes wrong! Response status: ' + str(add_response.status_code) + '\nPlease use -h for help and try again.')
+        print(f'Warning: \nSomething goes wrong! Response status: ' + str(
+            add_response.status_code) + '\nPlease use -h for help and try again.')
 
 
 def get_current_tickers():
     req = requests.get(URL, headers=HEADERS, cookies=COOKIES)
-    my_tickers: dict = json.loads(req.text)
-    print(my_tickers['symbols'])
+    my_tickers = req.json()
+    return json.dumps(my_tickers['symbols'])
 
 
-def delete_tickers():
-    # TODO: write delete tickers
-    pass
+def delete_tickers(tickers: list):
+    url_adding = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/remove/'
+    adding_headers: dict = {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Connection": "keep-alive",
+        "Cookie": "_sp_id.cf1a=2b7f734a-07bf-4ee5-8a23-76e7da695f98.1613237271.146.1615576298.1615574319.6263c3c3-9a1e-43e4-9607-11ef3dee49e6; sessionid=djidz6wslxnw510erzs6abto6o3bvk4u; tv_ecuid=eaf43895-763b-41ff-ba93-a5686abe49d4; png=eaf43895-763b-41ff-ba93-a5686abe49d4; etg=eaf43895-763b-41ff-ba93-a5686abe49d4; cachec=eaf43895-763b-41ff-ba93-a5686abe49d4; backend=test_backend; _sp_ses.cf1a=*",
+        "DNT": "1",
+        "Host": "ru.tradingview.com",
+        "Origin": "https://ru.tradingview.com",
+        "Referer": "https://ru.tradingview.com/chart/wfLFyqcn/",
+        "TE": "Trailers",
+        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0",
+        "content-type": "application/json",
+        "x-language": "ru",
+        "x-requested-with": "XMLHttpRequest"
+    }
+    del_response = requests.post(url_adding, headers=adding_headers, data=json.dumps(tickers))
+    if del_response.status_code == 200:
+        print(del_response.text)
+    else:
+        print(f'Warning: \nSomething goes wrong! Response status: ' + str(
+            del_response.status_code) + '\nPlease use -h for help and try again.')
 
 
 def main():
     if cli_args().backup:
-        get_current_tickers()
+        print(get_current_tickers())
 
     if cli_args().load:
         if not sys.stdin.isatty():
-            # add_tickers(validate_format(sys.stdin.read()))
-
-            # add_tickers((json.loads(sys.stdin)))
             add_tickers(validate_format(json.load(sys.stdin)))
-
         else:
             print(
                 f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
             )
 
     if cli_args().free:
-        delete_tickers(get_current_tickers())
+        ansver = input(
+            b_colors.WARNING + "Are you sure, you want delete all you current tickers? Do you make backup? Y/n: " + b_colors.ENDC)
+        if ansver == 'Y':
+            print(b_colors.OKGREEN + "Deleting shares..." + b_colors.ENDC)
+            # delete_tickers(validate_format(json.loads('["OANDA:XAUUSD","BITSTAMP:BTCUSD","NASDAQ:LRCX","NASDAQ:MELI"]')))
+            delete_tickers(validate_format(json.loads(get_current_tickers())))
+            print(b_colors.OKGREEN + "All pass good! You dashboard cleaned." + b_colors.ENDC)
+        if ansver == 'n':
+            print(b_colors.FAIL + "Deleting interrupted!" + b_colors.ENDC)
 
         # print(ticker_search('GOOG'))
         # add_tickers(["OANDA:XAUUSD", "BITSTAMP:BTCUSD"])
@@ -149,3 +195,5 @@ def main():
 if __name__ == '__main__':
     add_cli_args()
     main()
+# TODO: writing in file
+# TODO: refactor all this shit to classes
