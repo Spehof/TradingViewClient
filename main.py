@@ -4,6 +4,14 @@ import json
 import sys
 import re
 import time
+from validator import  TickersValidator
+from tradingview import TradingView
+from tconfig import TconfigVrapper
+
+config = TconfigVrapper()
+trading_view = TradingView()
+ticker_validator = TickersValidator()
+
 
 URL = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
 HEADERS = {
@@ -52,6 +60,16 @@ def add_cli_args():
                         const=sys.stdin,
                         )
 
+    def validate_format(tickers: list):
+        formatted_list = []
+        valid_tickers_pattern = re.compile("[A-Z]+:[A-Z]+")
+        for ticker in tickers:
+            if not valid_tickers_pattern.findall(ticker):
+                print('INVALID TICKER => ' + ticker)
+                formatted_list.append(trading_view.repair_ticker_format(ticker))
+            else:
+                formatted_list.append(ticker)
+        return formatted_list
 
 def cli_args():
     args = parser.parse_args()
@@ -116,7 +134,7 @@ def validate_format(tickers: list):
     for ticker in tickers:
         if not valid_tickers_pattern.findall(ticker):
             print('INVALID TICKER => ' + ticker)
-            formatted_list.append(repair_format(ticker))
+            formatted_list.append(trading_view.repair_ticker_format(ticker))
         else:
             formatted_list.append(ticker)
     return formatted_list
@@ -196,33 +214,25 @@ def write_all_new_tickers_in_tconfig():
 
 def main():
     if cli_args().backup:
-        print(get_current_tickers())
+        print(trading_view.get_current_tickers())
 
     if cli_args().load:
         if not sys.stdin.isatty():
-            add_tickers(validate_format(json.load(sys.stdin)))
+            # trading_view.add_tickers(["BITSTAMP:BTCUSD"])
+            # TODO add validation and restore format with JSON file
+            trading_view.add_tickers(json.load(sys.stdin))
         else:
             print(
                 f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
             )
-
     if cli_args().free:
-        ansver = input(
-            b_colors.WARNING + "Are you sure, you want delete all you current tickers? Do you make backup? Y/n: " + b_colors.ENDC)
-        if ansver == 'Y':
-            print(b_colors.OKGREEN + "Deleting shares..." + b_colors.ENDC)
-            # delete_tickers(validate_format(json.loads('["OANDA:XAUUSD","BITSTAMP:BTCUSD","NASDAQ:LRCX","NASDAQ:MELI"]')))
-            delete_tickers(validate_format(json.loads(get_current_tickers())))
-            print(b_colors.OKGREEN + "All pass good! You dashboard cleaned." + b_colors.ENDC)
-        if ansver == 'n':
-            print(b_colors.FAIL + "Deleting interrupted!" + b_colors.ENDC)
-
+        trading_view.free_all_tickers()
 
 
 if __name__ == '__main__':
     add_cli_args()
-    load_config()
+    config.load_from_file()
     main()
-    write_all_new_tickers_in_tconfig()
+    config.refresh()
 # TODO: writing in file
 # TODO: refactor all this shit to classes
