@@ -16,6 +16,7 @@ COOKIES = {
 
 parser = argparse.ArgumentParser(description='This is CLI client for tradingview.com',
                                  epilog='Enjoy!')
+tconfig = {}
 
 
 class b_colors:
@@ -74,15 +75,39 @@ def ticker_search(ticker: str):
     else:
         return []
 
+def load_config():
+    global tconfig
+    try:
+        with open('tconfig.json') as f:
+            tconfig = json.load(f)
+    except IOError:
+        print(b_colors.FAIL + "File tconfig not accessible! Please check file: tconfig.json" + b_colors.ENDC)
+    finally:
+        f.close()
+
+
+
+def check_ticker_in_tconfig(ticker: str):
+    if ticker in tconfig.keys():
+        return True
+    else:
+        return False
+
+
 
 def repair_format(invalid_ticker: str):
-    suggested_ticker = ticker_search(invalid_ticker)
-    time.sleep(0.3)
-    if suggested_ticker:
-        return suggested_ticker[0]
+    if check_ticker_in_tconfig(invalid_ticker):
+        return tconfig.get(invalid_ticker)
     else:
-        print("SOMETHING WITH REQUEST REPAIRED TICKERS")
-        return ''
+        suggested_ticker = ticker_search(invalid_ticker)
+        time.sleep(0.3)
+        if suggested_ticker:
+            # добавляем тикер в конфиг
+            tconfig[invalid_ticker] = suggested_ticker[0]
+            return suggested_ticker[0]
+        else:
+            print("SOMETHING WITH REQUEST REPAIRED TICKERS")
+            return ''
 
 
 def validate_format(tickers: list):
@@ -164,6 +189,10 @@ def delete_tickers(tickers: list):
         print(f'Warning: \nSomething goes wrong! Response status: ' + str(
             del_response.status_code) + '\nPlease use -h for help and try again.')
 
+def write_all_new_tickers_in_tconfig():
+    with open('tconfig.json', 'w') as f:
+        json.dump(tconfig, f, indent=2, sort_keys=True)
+
 
 def main():
     if cli_args().backup:
@@ -188,12 +217,12 @@ def main():
         if ansver == 'n':
             print(b_colors.FAIL + "Deleting interrupted!" + b_colors.ENDC)
 
-        # print(ticker_search('GOOG'))
-        # add_tickers(["OANDA:XAUUSD", "BITSTAMP:BTCUSD"])
 
 
 if __name__ == '__main__':
     add_cli_args()
+    load_config()
     main()
+    write_all_new_tickers_in_tconfig()
 # TODO: writing in file
 # TODO: refactor all this shit to classes
