@@ -2,26 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import re
-from tconfig import TconfigVrapper
 
-# repair_ticker_format
+"""
+Utilities func
+For validate requirements tickers format
+"""
 
-tcw = TconfigVrapper()
 
-
-class TickersValidator:
-    """
-    Utilities class
-    For validate requirements tickers format
-    """
-
-    def validate_format(self, tickers: list):
-        formatted_list = []
-        valid_tickers_pattern = re.compile("[A-Z]+:[A-Z]+")
-        for ticker in tickers:
-            if not valid_tickers_pattern.findall(ticker):
-                print('INVALID TICKER => ' + ticker)
-                formatted_list.append(self.repair_format(ticker))
-            else:
-                formatted_list.append(ticker)
-        return formatted_list
+def validate_format(ticker: list):
+    valid_tickers_pattern = re.compile("[A-Z]+:[A-Z]+")
+    if valid_tickers_pattern.match(ticker):
+        print('VALID TICKER => ' + ticker)
+        return True
+    else:
+        print('INVALID TICKER => ' + ticker)
+        return False

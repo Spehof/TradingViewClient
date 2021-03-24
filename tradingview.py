@@ -3,13 +3,9 @@
 
 import requests
 import json
-from validator import TickersValidator
-from tconfig import TconfigVrapper
+import tconfig
 from colors import b_colors
 import time
-
-config = TconfigVrapper()
-validator = TickersValidator()
 
 
 class TradingView:
@@ -119,19 +115,14 @@ class TradingView:
     """
 
     def repair_ticker_format(self, invalid_ticker: str):
-        print(invalid_ticker)
-        if config.check_ticker_in_tconfig(invalid_ticker):
-            print('дебаг нашли тикер в конфиге')
-            return config.get_tickers_list_config().get(invalid_ticker)
+
+        if tconfig.exist(invalid_ticker):
+            return tconfig.get_value(invalid_ticker)
         else:
-            print('дебаг делаем запрос')
             suggested_ticker = self.ticker_search(invalid_ticker)
             time.sleep(0.3)
-            print('дебаг тикер из запроса')
-            print(suggested_ticker)
             if suggested_ticker:
-                # добавляем тикер в конфиг
-                config.write_in_config(invalid_ticker, suggested_ticker[0])
+                tconfig.write(invalid_ticker, suggested_ticker[0])
                 return suggested_ticker[0]
             else:
                 print("SOMETHING WITH REQUEST REPAIRED TICKERS")
@@ -150,3 +141,7 @@ class TradingView:
         else:
             print('No one invalid tickers found')
             return tickers
+
+    def ping(self):
+        # TODO: write getting account name
+        pass
