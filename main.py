@@ -72,3 +72,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+# TODO coocky in config file
+# TODO debug trash tickers
+# TODO README
