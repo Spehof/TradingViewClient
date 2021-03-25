@@ -19,8 +19,8 @@ class TradingView:
         self.url_curr_tickers: str = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
         self.url_adding: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/append/'
         self.url_deleting: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/remove/'
-        self.cookies_for_search: dict = {
-            'cookie': '_sp_id.cf1a=2b7f734a-07bf-4ee5-8a23-76e7da695f98.1613237271.142.1615548626.1615545423.6bf1ab93-5564-4f63-ada8-c04853135f59; sessionid=djidz6wslxnw510erzs6abto6o3bvk4u; tv_ecuid=eaf43895-763b-41ff-ba93-a5686abe49d4; png=eaf43895-763b-41ff-ba93-a5686abe49d4; etg=eaf43895-763b-41ff-ba93-a5686abe49d4; cachec=eaf43895-763b-41ff-ba93-a5686abe49d4; backend=test_backend; _sp_ses.cf1a=*'}
+        self.cookies_for_search: dict = {'cookie': get_cookie()}
+            # {'cookie': '_sp_id.cf1a=2b7f734a-07bf-4ee5-8a23-76e7da695f98.1613237271.142.1615548626.1615545423.6bf1ab93-5564-4f63-ada8-c04853135f59; sessionid=djidz6wslxnw510erzs6abto6o3bvk4u; tv_ecuid=eaf43895-763b-41ff-ba93-a5686abe49d4; png=eaf43895-763b-41ff-ba93-a5686abe49d4; etg=eaf43895-763b-41ff-ba93-a5686abe49d4; cachec=eaf43895-763b-41ff-ba93-a5686abe49d4; backend=test_backend; _sp_ses.cf1a=*'}
         self.headers_for_search: dict = {
             'accept': '*/*',
             'x-language': 'en',
@@ -50,7 +50,7 @@ class TradingView:
 
     def ticker_search(self, ticker: str):
         url_search = f'https://symbol-search.tradingview.com/symbol_search/?text={ticker}&hl=1&exchange=&lang=ru&type=&domain=production'
-        suggestion_tickers = requests.get(url_search, headers=self.headers_for_search, cookies=self.cookies_for_search)
+        suggestion_tickers = requests.get(url_search, headers=self.headers_for_search, cookies=self.cookies_for_search, timeout=5)
         if suggestion_tickers.status_code == 200:
             tickers_dict: dict = json.loads(suggestion_tickers.text)
             tickers_resp = []
@@ -82,7 +82,7 @@ class TradingView:
     def get_current_tickers(self):
         req = requests.get(self.url_curr_tickers, headers=self.headers, cookies=self.cookies_for_search)
         my_tickers = req.json()
-        return json.dumps(my_tickers['symbols'])
+        return json.dumps(my_tickers['symbols'], indent=2, sort_keys=True)
 
     """
     Delete given tickers list from account.

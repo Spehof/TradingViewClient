@@ -61,8 +61,6 @@ def working_with_args():
                     valid_list.append(ticker)
                 else:
                     valid_list.append(trading_view.repair_ticker_format(ticker))
-            for ticker in valid_list:
-                print("передаю этот тикер " + ticker)
             trading_view.add_tickers(valid_list)
         else:
             print(
