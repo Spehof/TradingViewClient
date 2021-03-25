@@ -17,8 +17,10 @@ class TradingView:
 
     def __init__(self):
         self.url_curr_tickers: str = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
-        self.url_adding: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/append/'
-        self.url_deleting: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/remove/'
+        self.url_adding: str = 'https://www.tradingview.com/api/v1/symbols_list/colored/red/append/'
+        # self.url_adding: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/append/'
+        self.url_deleting: str = 'https://www.tradingview.com/api/v1/symbols_list/colored/red/remove/'
+        # self.url_deleting: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/remove/'
         self.cookies_for_search: dict = {'cookie': get_cookie()}
             # {'cookie': '_sp_id.cf1a=2b7f734a-07bf-4ee5-8a23-76e7da695f98.1613237271.142.1615548626.1615545423.6bf1ab93-5564-4f63-ada8-c04853135f59; sessionid=djidz6wslxnw510erzs6abto6o3bvk4u; tv_ecuid=eaf43895-763b-41ff-ba93-a5686abe49d4; png=eaf43895-763b-41ff-ba93-a5686abe49d4; etg=eaf43895-763b-41ff-ba93-a5686abe49d4; cachec=eaf43895-763b-41ff-ba93-a5686abe49d4; backend=test_backend; _sp_ses.cf1a=*'}
         self.headers_for_search: dict = {
@@ -118,8 +120,10 @@ class TradingView:
     def repair_ticker_format(self, invalid_ticker: str):
 
         if tconfig.exist(invalid_ticker):
+            print(b_colors.OKGREEN + 'Ticker ' + invalid_ticker + ' found in config' + b_colors.ENDC)
             return tconfig.get_value(invalid_ticker)
         else:
+            print(b_colors.OKCYAN + 'Ticker ' + invalid_ticker + ' getting request' + b_colors.ENDC)
             suggested_ticker = self.ticker_search(invalid_ticker)
             time.sleep(0.5)
             if suggested_ticker:
