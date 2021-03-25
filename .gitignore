@@ -142,3 +142,4 @@ cython_debug/
 
 .env.run
 .env.stop
+cookie.txt

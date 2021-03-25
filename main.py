@@ -1,4 +1,6 @@
-import requests
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import argparse
 import json
 import sys
@@ -6,6 +8,7 @@ from validator import validate_format
 from tradingview import TradingView
 import tconfig
 from colors import b_colors
+
 
 trading_view = TradingView()
 
@@ -41,9 +44,15 @@ def cli_args():
 
 
 def working_with_args():
+    """
+    backup arg working
+    """
     if cli_args().backup:
         print(trading_view.get_current_tickers())
 
+    """
+    load arg working
+    """
     if cli_args().load:
         if not sys.stdin.isatty():
             valid_list = []
@@ -59,6 +68,10 @@ def working_with_args():
             print(
                 f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
             )
+
+    """
+    free arg working
+    """
     if cli_args().free:
         trading_view.free_all_tickers()
 

@@ -6,6 +6,7 @@ import json
 import tconfig
 from colors import b_colors
 import time
+from cookieLoader import get_cookie
 
 
 class TradingView:
@@ -30,7 +31,7 @@ class TradingView:
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "en-US,en;q=0.5",
             "Connection": "keep-alive",
-            "Cookie": "_sp_id.cf1a=2b7f734a-07bf-4ee5-8a23-76e7da695f98.1613237271.146.1615576298.1615574319.6263c3c3-9a1e-43e4-9607-11ef3dee49e6; sessionid=djidz6wslxnw510erzs6abto6o3bvk4u; tv_ecuid=eaf43895-763b-41ff-ba93-a5686abe49d4; png=eaf43895-763b-41ff-ba93-a5686abe49d4; etg=eaf43895-763b-41ff-ba93-a5686abe49d4; cachec=eaf43895-763b-41ff-ba93-a5686abe49d4; backend=test_backend; _sp_ses.cf1a=*",
+            "Cookie": get_cookie(),
             "DNT": "1",
             "Host": "ru.tradingview.com",
             "Origin": "https://ru.tradingview.com",
@@ -120,7 +121,7 @@ class TradingView:
             return tconfig.get_value(invalid_ticker)
         else:
             suggested_ticker = self.ticker_search(invalid_ticker)
-            time.sleep(0.3)
+            time.sleep(0.5)
             if suggested_ticker:
                 tconfig.write(invalid_ticker, suggested_ticker[0])
                 return suggested_ticker[0]
