@@ -8,6 +8,7 @@ from validator import validate_format
 from tradingview import TradingView
 import tconfig
 from colors import b_colors
+from tabulate import tabulate
 
 
 trading_view = TradingView()
@@ -30,12 +31,15 @@ def add_cli_args():
     parser.add_argument('-c', '--cookie',
                         help='Get own cookie',
                         action='store_true')
-    parser.add_argument('-l', '--load',
+    parser.add_argument('-s', '--set',
                         type=str,
                         nargs='?',
-                        help='Load all tickers to TradingView symbols list from stdin',
+                        help='Set all tickers to TradingView symbols list from stdin',
                         const=sys.stdin,
                         )
+    parser.add_argument('-l', '--list',
+                        help='Get all existing lists tickers',
+                        action='store_true')
 
 
 def cli_args():
@@ -45,15 +49,15 @@ def cli_args():
 
 def working_with_args():
     """
-    backup arg working
+    Backup arg working.
     """
     if cli_args().backup:
         print(trading_view.get_current_tickers())
 
     """
-    load arg working
+    Load arg working.
     """
-    if cli_args().load:
+    if cli_args().set:
         if not sys.stdin.isatty():
             valid_list = []
             for ticker in json.load(sys.stdin):
@@ -68,10 +72,17 @@ def working_with_args():
             )
 
     """
-    free arg working
+    Free arg working.
     """
     if cli_args().free:
         trading_view.free_all_tickers()
+
+    """
+    
+    """
+    if cli_args().list:
+        print(tabulate(trading_view.get_all_list_info(), headers=['ID', 'Name', 'Type']))
+
 
 
 def main():

@@ -4,6 +4,11 @@ from colors import b_colors
 
 
 def get_cookie():
+    """
+    Return cookie from file 'cookie.txt'.
+    If file or cookie not exists - terminate program.
+    """
+
     try:
         with open("cookie.txt") as f:
             if os.stat("cookie.txt").st_size == 0:
