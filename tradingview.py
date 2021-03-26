@@ -16,6 +16,7 @@ class TradingView:
     """
 
     def __init__(self):
+        self.url_all_tickers_list: str = 'https://www.tradingview.com/api/v1/symbols_list/all/'
         self.url_curr_tickers: str = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
         self.url_adding: str = 'https://www.tradingview.com/api/v1/symbols_list/colored/red/append/'
         # self.url_adding: str = 'https://ru.tradingview.com/api/v1/symbols_list/custom/19681992/append/'
@@ -157,7 +158,7 @@ class TradingView:
         Return list of list strings
         """
 
-        list_dto = requests.get('https://www.tradingview.com/api/v1/symbols_list/all/', headers=self.headers)
+        list_dto = requests.get(self.url_all_tickers_list, headers=self.headers)
         list_labels = []
         if list_dto.status_code == 200:
             for list_item in list_dto.json():
