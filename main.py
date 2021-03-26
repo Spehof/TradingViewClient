@@ -48,16 +48,22 @@ def cli_args():
 
 
 def working_with_args():
-    """
-    Backup arg working.
-    """
+
     if cli_args().backup:
+        """
+        Get all tickers from current list and print to stdout.
+        Of course you can redirect this tickers list to file ( > backup.txt) or to another program across pipe
+        """
+
         print(trading_view.get_current_tickers())
 
-    """
-    Load arg working.
-    """
     if cli_args().set:
+        """
+        Receive tickers list in stdin -> validate them across tconfig.json or if can't find ticker there getting request
+        to TradingView and takes first result from answer, also write this answer in tconfig.json.
+        You can edit tconfig.json for takes tickers and exchanges what you want.
+        """
+
         if not sys.stdin.isatty():
             valid_list = []
             for ticker in json.load(sys.stdin):
@@ -71,16 +77,18 @@ def working_with_args():
                 f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
             )
 
-    """
-    Free arg working.
-    """
     if cli_args().free:
+        """
+        Clear full list of tickers.
+        """
+
         trading_view.free_all_tickers()
 
-    """
-    
-    """
     if cli_args().list:
+        """
+        Retrieve and print all list of tickers to stdout
+        """
+
         print(tabulate(trading_view.get_all_list_info(), headers=['ID', 'Name', 'Type']))
 
 
