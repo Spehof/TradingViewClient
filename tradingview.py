@@ -63,6 +63,20 @@ class TradingView:
     def get_symbols_list(self, name: str):
         return self.symbols_list.get(name)
 
+    def get_all_symbols_list_name(self):
+        return self.symbols_list.keys()
+
+    def get_all_symbol_list_id(self):
+        lists_id = []
+        for symbol_list_name in self.get_all_symbols_list_name():
+            lists_id.append(self.symbols_list.get(symbol_list_name).get_id())
+        return lists_id
+
+    def get_symbols_in_list(self, needed_list_id: int):
+        for list_name in self.get_all_symbols_list_name():
+            if self.symbols_list.get(list_name).get_id() == needed_list_id:
+                return self.symbols_list.get(list_name).get_symbols()
+
     def __ticker_search(self, ticker: str):
         """
         ticker - ticker in string format for search
@@ -177,22 +191,11 @@ class TradingView:
         Get info about current lists tickers
         Return list of list strings
         """
-        list_labels =[]
-        print(self.symbols_list.keys())
+        list_labels = []
         for symbol_list_name in self.symbols_list.keys():
             list_labels.append([
-            self.symbols_list.get(symbol_list_name).get_id(),
-            self.symbols_list.get(symbol_list_name).get_name(),
-            self.symbols_list.get(symbol_list_name).get_type()
-                ])
+                self.symbols_list.get(symbol_list_name).get_id(),
+                self.symbols_list.get(symbol_list_name).get_name(),
+                self.symbols_list.get(symbol_list_name).get_type()
+            ])
         return list_labels
-
-        # list_dto = requests.get(self.url_all_tickers_list, headers=self.headers)
-        # list_labels = []
-        # if list_dto.status_code == 200:
-        #     for list_item in list_dto.json():
-        #         list_labels.append([list_item['id'], list_item['name'], list_item['type']])
-        #     return list_labels
-        # else:
-        #     raise InvalidURL('Something goes wrong with getting actual lists tickers. Status code: ' \
-        #                      + list_dto.status_code)

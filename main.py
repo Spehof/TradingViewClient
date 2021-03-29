@@ -20,8 +20,10 @@ parser = argparse.ArgumentParser(description='This is CLI client for tradingview
 def add_cli_args():
     global parser
     parser.add_argument('-b', '--backup',
+                        type=str,
+                        nargs='?',
                         help='Get all current tickers to stdout',
-                        action='store_true')
+                        const=sys.stdin)
     parser.add_argument('-p', '--ping',
                         help='Check connection to site with current cookie',
                         action='store_true')
@@ -54,8 +56,17 @@ def working_with_args():
         Get all tickers from current list and print to stdout.
         Of course you can redirect this tickers list to file ( > backup.txt) or to another program across pipe
         """
+        if len(sys.argv) == 3:
+            symbols_list_id = json.loads(sys.argv[2])
+            if symbols_list_id in trading_view.get_all_symbol_list_id():
+                print(json.dumps(trading_view.get_symbols_in_list(symbols_list_id), indent=2, sort_keys=True))
+            else:
+                print('You set incorrect list ID! Please check it and try again.')
+        else:
+            print('Set ID of list which needed backup tickers!')
 
-        print(trading_view.get_current_tickers())
+        #     old realize
+        # print(trading_view.get_current_tickers())
 
     if cli_args().set:
         """
