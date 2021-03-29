@@ -10,6 +10,7 @@ import tconfig
 from colors import b_colors
 import time
 from cookieLoader import get_cookie
+from symbolsList import SymbolsList
 
 
 class TradingView:
@@ -19,6 +20,7 @@ class TradingView:
     """
 
     def __init__(self):
+
         self.url_all_tickers_list: str = 'https://www.tradingview.com/api/v1/symbols_list/all/'
         self.url_curr_tickers: str = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
         self.url_adding: str = 'https://www.tradingview.com/api/v1/symbols_list/colored/red/append/'
@@ -47,8 +49,19 @@ class TradingView:
             "x-language": "ru",
             "x-requested-with": "XMLHttpRequest"
         }
+        self.symbols_list: dict = self.__init_symbols_lists()
 
-    def ticker_search(self, ticker: str):
+    def __init_symbols_lists(self):
+        symbols_list = requests.get(self.url_all_tickers_list, headers=self.headers).json()
+        for symbol_list in symbols_list:
+            return {
+                symbol_list['name']: SymbolsList(symbol_list['id'])
+            }
+
+    def get_symbols_list(self, name: str):
+        return self.symbols_list.get(name)
+
+    def __ticker_search(self, ticker: str):
         """
         ticker - ticker in string format for search
         return - list suggestion  in format - exchange:symbol
@@ -130,7 +143,7 @@ class TradingView:
             return tconfig.get_value(invalid_ticker)
         else:
             print(b_colors.OKCYAN + 'Ticker ' + invalid_ticker + ' getting request' + b_colors.ENDC)
-            suggested_ticker = self.ticker_search(invalid_ticker)
+            suggested_ticker = self.__ticker_search(invalid_ticker)
             time.sleep(0.5)
             if suggested_ticker:
                 tconfig.write(invalid_ticker, suggested_ticker[0])
