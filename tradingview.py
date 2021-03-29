@@ -3,6 +3,9 @@
 
 import requests
 import json
+
+from requests.exceptions import InvalidURL
+
 import tconfig
 from colors import b_colors
 import time
@@ -75,7 +78,7 @@ class TradingView:
         if add_response.status_code == 200:
             print(add_response.text)
         else:
-            print(f'Warning: \nSomething goes wrong! Response status: ' + str(
+            raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 add_response.status_code) + '\nPlease use -h for help and try again.')
 
     def get_current_tickers(self):
@@ -84,8 +87,11 @@ class TradingView:
         """
 
         req = requests.get(self.url_curr_tickers, headers=self.headers, cookies=self.cookies_for_search)
-        my_tickers = req.json()
-        return json.dumps(my_tickers['symbols'], indent=2, sort_keys=True)
+        if req.status_code == 200:
+            my_tickers = req.json()
+            return json.dumps(my_tickers['symbols'], indent=2, sort_keys=True)
+        else:
+            raise InvalidURL("Cant get all my current tickers. Response status code: " + str(req.status_code))
 
     def delete_tickers(self, tickers: list):
         """
@@ -96,7 +102,7 @@ class TradingView:
         if del_response.status_code == 200:
             print(del_response.text)
         else:
-            print(f'Warning: \nSomething goes wrong! Response status: ' + str(
+            raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 del_response.status_code) + '\nPlease use -h for help and try again.')
 
     def free_all_tickers(self):
@@ -164,6 +170,5 @@ class TradingView:
                 list_labels.append([list_item['id'], list_item['name'], list_item['type']])
             return list_labels
         else:
-            print(
-                b_colors.FAIL + 'Something goes wrong with getting actual lists tickers. Status code: ' \
-                + list_dto.status_code + b_colors.ENDC)
+            raise InvalidURL('Something goes wrong with getting actual lists tickers. Status code: ' \
+                             + list_dto.status_code)
