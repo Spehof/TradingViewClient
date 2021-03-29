@@ -50,6 +50,7 @@ class TradingView:
             "x-requested-with": "XMLHttpRequest"
         }
         self.symbols_list: dict = self.__init_symbols_lists()
+    #     TODO write ticker_searcher subclass
 
     def __init_symbols_lists(self):
         symbols_list_filled = {}
@@ -95,7 +96,7 @@ class TradingView:
             return tickers_resp
         else:
             return []
-
+    # TODO move this in tickers subclass
     def add_tickers(self, tickers: list):
         """
         Add given tickers list to account.
@@ -109,7 +110,7 @@ class TradingView:
         else:
             raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 add_response.status_code) + '\nPlease use -h for help and try again.')
-
+    # TODO move this in tickers subclass
     def get_current_tickers(self):
         """
         Return current tickers from account.
@@ -121,7 +122,7 @@ class TradingView:
             return json.dumps(my_tickers['symbols'], indent=2, sort_keys=True)
         else:
             raise InvalidURL("Cant get all my current tickers. Response status code: " + str(req.status_code))
-
+    # TODO move this in tickers subclass
     def delete_tickers(self, tickers: list):
         """
         Delete given tickers list from account.
@@ -133,7 +134,7 @@ class TradingView:
         else:
             raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 del_response.status_code) + '\nPlease use -h for help and try again.')
-
+    # TODO move this in tickers subclass
     def free_all_tickers(self):
         """
         Delete all tickers from account.
@@ -185,7 +186,7 @@ class TradingView:
     def ping(self):
         # TODO: write getting account name
         pass
-
+    # TODO it's specific task (not related to tradingview client) move this functional in main module
     def get_all_list_info(self):
         """
         Get info about current lists tickers
