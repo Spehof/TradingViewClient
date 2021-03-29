@@ -52,11 +52,13 @@ class TradingView:
         self.symbols_list: dict = self.__init_symbols_lists()
 
     def __init_symbols_lists(self):
+        symbols_list_filled = {}
         symbols_list = requests.get(self.url_all_tickers_list, headers=self.headers).json()
         for symbol_list in symbols_list:
-            return {
+            symbols_list_filled.update({
                 symbol_list['name']: SymbolsList(symbol_list['id'])
-            }
+            })
+        return symbols_list_filled
 
     def get_symbols_list(self, name: str):
         return self.symbols_list.get(name)
@@ -175,13 +177,22 @@ class TradingView:
         Get info about current lists tickers
         Return list of list strings
         """
+        list_labels =[]
+        print(self.symbols_list.keys())
+        for symbol_list_name in self.symbols_list.keys():
+            list_labels.append([
+            self.symbols_list.get(symbol_list_name).get_id(),
+            self.symbols_list.get(symbol_list_name).get_name(),
+            self.symbols_list.get(symbol_list_name).get_type()
+                ])
+        return list_labels
 
-        list_dto = requests.get(self.url_all_tickers_list, headers=self.headers)
-        list_labels = []
-        if list_dto.status_code == 200:
-            for list_item in list_dto.json():
-                list_labels.append([list_item['id'], list_item['name'], list_item['type']])
-            return list_labels
-        else:
-            raise InvalidURL('Something goes wrong with getting actual lists tickers. Status code: ' \
-                             + list_dto.status_code)
+        # list_dto = requests.get(self.url_all_tickers_list, headers=self.headers)
+        # list_labels = []
+        # if list_dto.status_code == 200:
+        #     for list_item in list_dto.json():
+        #         list_labels.append([list_item['id'], list_item['name'], list_item['type']])
+        #     return list_labels
+        # else:
+        #     raise InvalidURL('Something goes wrong with getting actual lists tickers. Status code: ' \
+        #                      + list_dto.status_code)

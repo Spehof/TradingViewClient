@@ -28,28 +28,46 @@ class SymbolsList:
 
     def __init__(self,
                  list_id: int):
+        self.__id: int = list_id
+        self.__tickers_list_data = self.__get_list_info()
 
-        self.id: int = list_id
-        self.tickers_list_data = self.__get_list_info()
-        self.color: str = self.tickers_list_data['color']
-        self.active: bool = self.tickers_list_data['active']
-        self.symbols: list = self.tickers_list_data['symbols']
-        self.type: ListType = self.tickers_list_data['type']
-        self.name: str = self.tickers_list_data['name']
-        self.URL = self.__create_URL()
+        self.__color: str = self.__tickers_list_data['color']
+        self.__active: bool = self.__tickers_list_data['active']
+        self.__symbols: list = self.__tickers_list_data['symbols']
+        self.__type: ListType = self.__tickers_list_data['type']
+        self.__name: str = self.__tickers_list_data['name']
+        self.__URL: str = self.__create_URL()
+
+    def get_id(self) -> int:
+        return self.__id
+
+    def get_name(self) -> str:
+        return self.__name
+
+    def get_type(self) -> ListType:
+        return self.__type
+
+    def get_URL(self) -> str:
+        return self.__URL
+
+    def get_symbols(self) -> list:
+        return self.__symbols
+
+    def get_active(self) -> bool:
+        return self.__active
 
     def __create_URL(self):
-        if self.type == 'colored':
-            return self.SITE_URL + 'colored/' + self.color
+        if self.__type == 'colored':
+            return self.SITE_URL + 'colored/' + self.__color
         else:
-            return self.SITE_URL + 'custom/' + str(self.id)
+            return self.SITE_URL + 'custom/' + str(self.__id)
 
 
     def __get_list_info(self):
         responce_lists_info = requests.get(self.ALL_LISTS_URL, headers=self.headers)
         if responce_lists_info.status_code == 200:
             for list_info in responce_lists_info.json():
-                if self.id == list_info['id']:
+                if self.__id == list_info['id']:
                     return list_info
         else:
-            raise InvalidURL('Some problem with getting tickers_list_data for tickers list: ' + self.name)
+            raise InvalidURL('Some problem with getting tickers_list_data for tickers list: ' + self.__name)
