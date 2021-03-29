@@ -30,11 +30,12 @@ class SymbolsList:
                  list_id: int):
 
         self.id: int = list_id
-        self.color: str = self.__get_list_info('color')
-        self.active: bool = self.__get_list_info('active')
-        self.symbols: list = self.__get_list_info('symbols')
-        self.type: ListType = self.__get_list_info('type')
-        self.name: str = self.__get_list_info('name')
+        self.tickers_list_data = self.__get_list_info()
+        self.color: str = self.tickers_list_data['color']
+        self.active: bool = self.tickers_list_data['active']
+        self.symbols: list = self.tickers_list_data['symbols']
+        self.type: ListType = self.tickers_list_data['type']
+        self.name: str = self.tickers_list_data['name']
         self.URL = self.__create_URL()
 
     def __create_URL(self):
@@ -44,11 +45,11 @@ class SymbolsList:
             return self.SITE_URL + 'custom/' + str(self.id)
 
 
-    def __get_list_info(self, info: str):
+    def __get_list_info(self):
         responce_lists_info = requests.get(self.ALL_LISTS_URL, headers=self.headers)
         if responce_lists_info.status_code == 200:
             for list_info in responce_lists_info.json():
                 if self.id == list_info['id']:
-                    return list_info[info]
+                    return list_info
         else:
-            raise InvalidURL('Some problem with getting ' + info + ' for tickers list: ' + self.name)
+            raise InvalidURL('Some problem with getting tickers_list_data for tickers list: ' + self.name)
