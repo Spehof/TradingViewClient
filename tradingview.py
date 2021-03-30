@@ -50,41 +50,38 @@ class TradingView:
             "x-language": "ru",
             "x-requested-with": "XMLHttpRequest"
         }
-        self.symbols_list: dict = self.__init_symbols_lists()
+        self.symbols_list: list = self.__init_symbols_lists()
+
     #     TODO write ticker_searcher subclass
 
     def __init_symbols_lists(self):
-        symbols_list_filled = {}
+        symbols_list_filled: list = []
         symbols_list = requests.get(self.url_all_tickers_list, headers=self.headers).json()
         for symbol_list in symbols_list:
-            symbols_list_filled.update({
-                symbol_list['name']: SymbolsList(symbol_list['id'])
-            })
+            symbols_list_filled.append(SymbolsList(symbol_list['id']))
         return symbols_list_filled
 
-    def get_symbols_list(self, name: str):
+    def get_symbols_list(self, name: str) -> SymbolsList:
         return self.symbols_list.get(name)
 
-    def get_symbols_list(self, list_id: int):
-        for symbol_list in self.symbols_list():
-            if symbol_list.get_id() == list_id:
-                return symbol_list
+    def get_symbols_list(self, list_id: int) -> SymbolsList:
+        for curr_symbol_list in self.symbols_list:
+            if curr_symbol_list.get_id() == list_id:
+                return curr_symbol_list
             else:
                 raise TickersListNotExist("Tickers list not found! ID: " + str(list_id))
 
-    def get_all_symbols_list_name(self):
-        return self.symbols_list.keys()
+    def get_symbols_list_name(self, list_id: int) -> str:
+        for symbols_list in self.symbols_list:
+            if symbols_list.get_id() == list_id:
+                return symbols_list.get_name()
+            else:
+                raise TickersListNotExist("Tickers list not found! ID: " + str(list_id))
 
-    def get_all_symbol_list_id(self):
-        lists_id = []
-        for symbol_list_name in self.get_all_symbols_list_name():
-            lists_id.append(self.symbols_list.get(symbol_list_name).get_id())
-        return lists_id
-
-    def get_symbols_in_list(self, list_id: int):
-        for list_name in self.get_all_symbols_list_name():
-            if self.symbols_list.get(list_name).get_id() == list_id:
-                return self.symbols_list.get(list_name).get_symbols()
+    def get_symbols_from_list(self, list_id: int) -> list:
+        for symbols_list in self.symbols_list:
+            if symbols_list.get_id() == list_id:
+                return symbols_list.get_tickers()
 
     def __ticker_search(self, ticker: str):
         """
@@ -104,6 +101,7 @@ class TradingView:
             return tickers_resp
         else:
             return []
+
     # TODO move this in tickers subclass
     def add_tickers(self, tickers: list):
         """
@@ -118,6 +116,7 @@ class TradingView:
         else:
             raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 add_response.status_code) + '\nPlease use -h for help and try again.')
+
     # TODO move this in tickers subclass
     def get_current_tickers(self):
         """
@@ -130,6 +129,7 @@ class TradingView:
             return json.dumps(my_tickers['symbols'], indent=2, sort_keys=True)
         else:
             raise InvalidURL("Cant get all my current tickers. Response status code: " + str(req.status_code))
+
     # TODO move this in tickers subclass
     def delete_tickers(self, tickers: list):
         """
@@ -142,6 +142,7 @@ class TradingView:
         else:
             raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 del_response.status_code) + '\nPlease use -h for help and try again.')
+
     # TODO move this in tickers subclass
     def free_all_tickers(self, list_id: int):
         """
@@ -151,9 +152,11 @@ class TradingView:
         ansver: str = input(
             b_colors.WARNING + "Are you sure, you want delete all you current tickers? Do you make backup? Y/n: " + b_colors.ENDC)
         if ansver == 'Y':
-            print(b_colors.OKGREEN + "Deleting shares from list " + self.get_symbols_in_list(list_id) +  "..." + b_colors.ENDC)
-            self.delete_tickers(json.loads(self.get_current_tickers()))
-        #     print(b_colors.OKGREEN + "All pass good! You dashboard cleaned." + b_colors.ENDC)
+            print(b_colors.OKGREEN + "Deleting shares from list " + self.get_symbols_list_name(list_id) + "..." + b_colors.ENDC)
+            current_tickers: list = self.get_symbols_from_list(list_id)
+            self.get_symbols_list(list_id).delete_tickers(current_tickers)
+            # self.delete_tickers(json.loads(self.get_current_tickers()))
+            print(b_colors.OKGREEN + "All pass good! You dashboard cleaned." + b_colors.ENDC)
         if ansver == 'n':
             print(b_colors.FAIL + "Deleting interrupted!" + b_colors.ENDC)
 

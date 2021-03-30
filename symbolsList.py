@@ -63,7 +63,10 @@ class SymbolsList:
     def delete_tickers(self, tickers_list: list):
         del_response = requests.post(self.__URL_remove, headers=self.headers, data=json.dumps(tickers_list))
         if del_response.status_code == 200:
-            print(del_response.text)
+            """
+            Uncomment if needed print the remaining tickers
+            """
+            # print(del_response.text)
         else:
             raise InvalidURL(f'Warning: \nSomething with deleting tickers goes wrong! Response status: ' + str(
                 del_response.status_code) + '\nPlease use -h for help and try again.')
