@@ -117,33 +117,6 @@ class TradingView:
             raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
                 add_response.status_code) + '\nPlease use -h for help and try again.')
 
-    # TODO move this in tickers subclass
-    def get_current_tickers(self):
-        """
-        Return current tickers from account.
-        """
-
-        req = requests.get(self.url_curr_tickers, headers=self.headers, cookies=self.cookies_for_search)
-        if req.status_code == 200:
-            my_tickers = req.json()
-            return json.dumps(my_tickers['symbols'], indent=2, sort_keys=True)
-        else:
-            raise InvalidURL("Cant get all my current tickers. Response status code: " + str(req.status_code))
-
-    # TODO move this in tickers subclass
-    def delete_tickers(self, tickers: list):
-        """
-        Delete given tickers list from account.
-        """
-
-        del_response = requests.post(self.url_deleting, headers=self.headers, data=json.dumps(tickers))
-        if del_response.status_code == 200:
-            print(del_response.text)
-        else:
-            raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
-                del_response.status_code) + '\nPlease use -h for help and try again.')
-
-    # TODO move this in tickers subclass
     def free_all_tickers(self, list_id: int):
         """
         Delete all tickers from account.
@@ -152,10 +125,10 @@ class TradingView:
         ansver: str = input(
             b_colors.WARNING + "Are you sure, you want delete all you current tickers? Do you make backup? Y/n: " + b_colors.ENDC)
         if ansver == 'Y':
-            print(b_colors.OKGREEN + "Deleting shares from list " + self.get_symbols_list_name(list_id) + "..." + b_colors.ENDC)
+            print(b_colors.OKGREEN + "Deleting shares from list " + self.get_symbols_list_name(
+                list_id) + "..." + b_colors.ENDC)
             current_tickers: list = self.get_symbols_from_list(list_id)
             self.get_symbols_list(list_id).delete_tickers(current_tickers)
-            # self.delete_tickers(json.loads(self.get_current_tickers()))
             print(b_colors.OKGREEN + "All pass good! You dashboard cleaned." + b_colors.ENDC)
         if ansver == 'n':
             print(b_colors.FAIL + "Deleting interrupted!" + b_colors.ENDC)

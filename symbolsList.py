@@ -61,6 +61,10 @@ class SymbolsList:
         return self.__active
 
     def delete_tickers(self, tickers_list: list):
+        """
+        Delete given tickers list from account.
+        """
+
         del_response = requests.post(self.__URL_remove, headers=self.headers, data=json.dumps(tickers_list))
         if del_response.status_code == 200:
             """

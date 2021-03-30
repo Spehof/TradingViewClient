@@ -21,26 +21,25 @@ def add_cli_args():
     parser.add_argument('-b', '--backup',
                         type=int,
                         nargs='?',
-                        help='Get all current tickers to stdout',
-                        const=sys.stdin)
+                        help='Get all current tickers from of said tickers list to stdout')
     parser.add_argument('-p', '--ping',
                         help='Check connection to site with current cookie',
                         action='store_true')
     parser.add_argument('-f', '--free',
                         type=int,
                         nargs='?',
-                        help='Remove all tickers from symbols list')
+                        help='Remove all tickers from of said symbols list')
     parser.add_argument('-c', '--cookie',
                         help='Get own cookie',
                         action='store_true')
     parser.add_argument('-s', '--set',
                         type=str,
                         nargs='?',
-                        help='Set all tickers to TradingView symbols list from stdin',
+                        help='Set all tickers to of said TradingView symbols list from stdin.',
                         const=sys.stdin,
                         )
     parser.add_argument('-l', '--list',
-                        help='Get all existing lists tickers',
+                        help='Get all existing lists tickers information.',
                         action='store_true')
 
 
