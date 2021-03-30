@@ -55,7 +55,7 @@ def working_with_args():
         Of course you can redirect this tickers list to file ( > backup.txt) or to another program across pipe
         """
 
-        # TODO move all validations in validators class
+        # TODO add connection timeouts for all requests
 
         tickers_list_id = cli_args().backup
         if validate_tickerslist_id(tickers_list_id):
