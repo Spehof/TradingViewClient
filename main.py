@@ -10,7 +10,6 @@ import tconfig
 from colors import b_colors
 from tabulate import tabulate
 
-
 trading_view = TradingView()
 
 parser = argparse.ArgumentParser(description='This is CLI client for tradingview.com',
@@ -20,7 +19,7 @@ parser = argparse.ArgumentParser(description='This is CLI client for tradingview
 def add_cli_args():
     global parser
     parser.add_argument('-b', '--backup',
-                        type=str,
+                        type=int,
                         nargs='?',
                         help='Get all current tickers to stdout',
                         const=sys.stdin)
@@ -51,7 +50,6 @@ def cli_args():
 
 
 def working_with_args():
-
     if cli_args().backup:
         """
         Get all tickers from current list and print to stdout.
@@ -59,14 +57,12 @@ def working_with_args():
         """
 
         # TODO move all validations in validators class
-        if len(sys.argv) == 3:
-            tickers_list_id = json.loads(sys.argv[2])
-            if tickers_list_id in trading_view.get_all_symbol_list_id():
-                print(json.dumps(trading_view.get_symbols_from_list(tickers_list_id), indent=2, sort_keys=True))
-            else:
-                print('You set incorrect list ID! Please check it and try again.')
+
+        tickers_list_id = cli_args().backup
+        if validate_tickerslist_id(tickers_list_id):
+            print(json.dumps(trading_view.get_symbols_from_list(tickers_list_id), indent=2, sort_keys=True))
         else:
-            print('Set ID of list which needed backup tickers!')
+            print('You set incorrect list ID! Please check it and try again.')
 
         #     old realize
         # print(trading_view.get_current_tickers())
@@ -95,15 +91,12 @@ def working_with_args():
         """
         Clear full list of tickers.
         """
-        # TODO move all validations in validators class
+
         tickers_list_id = cli_args().free
-        # symbols_list_id = json.loads(cli_args().free)
         if validate_tickerslist_id(tickers_list_id):
             trading_view.free_all_tickers(tickers_list_id)
         else:
             print('You set incorrect list ID! Please check it and try again.')
-        #     old realize
-        # trading_view.free_all_tickers()
 
     if cli_args().list:
         """
@@ -118,7 +111,6 @@ def working_with_args():
                 symbol_list.get_type()
             ])
         print(tabulate(list_labels, headers=['ID', 'Name', 'Type']))
-
 
 
 def main():

@@ -27,5 +27,5 @@ def validate_tickerslist_id(list_id: int):
     for symbols_list in tradingView.symbols_list:
         if symbols_list.get_id() == list_id:
             return True
-        else:
-            return False
+    else:
+        return False
