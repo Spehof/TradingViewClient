@@ -1,9 +1,11 @@
+import json
 from enum import Enum
 import requests
 from requests.exceptions import InvalidURL
 from cookieLoader import get_cookie
 
 ListType = Enum('custom', 'colored')
+
 
 
 class SymbolsList:
@@ -38,6 +40,7 @@ class SymbolsList:
         self.__type: ListType = self.__tickers_list_data['type']
         self.__name: str = self.__tickers_list_data['name']
         self.__URL: str = self.__create_URL()
+        self.__URL_remove: str = self.__create_URL_remove()
 
     def get_id(self) -> int:
         return self.__id
@@ -51,18 +54,19 @@ class SymbolsList:
     def get_URL(self) -> str:
         return self.__URL
 
-    def get_symbols(self) -> list:
+    def get_tickers(self) -> list:
         return self.__symbols
 
     def get_active(self) -> bool:
         return self.__active
 
-    def __create_URL(self) -> str:
-        if self.__type == 'colored':
-            return self.SITE_URL + 'colored/' + self.__color
+    def delete_tickers(self, tickers_list: list):
+        del_response = requests.post(self.__URL_remove, headers=self.headers, data=json.dumps(tickers_list))
+        if del_response.status_code == 200:
+            print(del_response.text)
         else:
-            return self.SITE_URL + 'custom/' + str(self.__id)
-
+            raise InvalidURL(f'Warning: \nSomething with deleting tickers goes wrong! Response status: ' + str(
+                del_response.status_code) + '\nPlease use -h for help and try again.')
 
     def __get_list_info(self):
         responce_lists_info = requests.get(self.ALL_LISTS_URL, headers=self.headers)
@@ -72,3 +76,13 @@ class SymbolsList:
                     return list_info
         else:
             raise InvalidURL('Some problem with getting tickers_list_data for tickers list: ' + self.__name)
+
+    def __create_URL(self) -> str:
+        if self.__type == 'colored':
+            return self.SITE_URL + 'colored/' + self.__color + '/'
+        else:
+            return self.SITE_URL + 'custom/' + str(self.__id) + '/'
+
+    def __create_URL_remove(self) -> str:
+        return self.__URL + 'remove'  + '/'
+

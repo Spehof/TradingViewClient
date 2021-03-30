@@ -1,0 +1,2 @@
+class TickersListNotExist(Exception):
+    pass
