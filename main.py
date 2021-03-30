@@ -100,7 +100,14 @@ def working_with_args():
         Retrieve and print all list of tickers to stdout
         """
 
-        print(tabulate(trading_view.get_all_list_info(), headers=['ID', 'Name', 'Type']))
+        list_labels = []
+        for symbol_list_name in trading_view.symbols_list.keys():
+            list_labels.append([
+                trading_view.symbols_list.get(symbol_list_name).get_id(),
+                trading_view.symbols_list.get(symbol_list_name).get_name(),
+                trading_view.symbols_list.get(symbol_list_name).get_type()
+            ])
+        print(tabulate(list_labels, headers=['ID', 'Name', 'Type']))
 
 
 

@@ -186,17 +186,3 @@ class TradingView:
     def ping(self):
         # TODO: write getting account name
         pass
-    # TODO it's specific task (not related to tradingview client) move this functional in main module
-    def get_all_list_info(self):
-        """
-        Get info about current lists tickers
-        Return list of list strings
-        """
-        list_labels = []
-        for symbol_list_name in self.symbols_list.keys():
-            list_labels.append([
-                self.symbols_list.get(symbol_list_name).get_id(),
-                self.symbols_list.get(symbol_list_name).get_name(),
-                self.symbols_list.get(symbol_list_name).get_type()
-            ])
-        return list_labels
