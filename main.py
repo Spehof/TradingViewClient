@@ -4,7 +4,7 @@
 import argparse
 import json
 import sys
-from validator import validate_format, validate_tickerslist_id
+from validator import validate_format, validate_tickers_list_id, repair_ticker_format
 from tradingview import TradingView
 import tconfig
 from colors import b_colors
@@ -33,7 +33,7 @@ def add_cli_args():
                         help='Get own cookie',
                         action='store_true')
     parser.add_argument('-s', '--set',
-                        type=str,
+                        type=int,
                         nargs='?',
                         help='Set all tickers to of said TradingView symbols list from stdin.',
                         const=sys.stdin,
@@ -58,8 +58,8 @@ def working_with_args():
         # TODO add connection timeouts for all requests
 
         tickers_list_id = cli_args().backup
-        if validate_tickerslist_id(tickers_list_id):
-            print(json.dumps(trading_view.get_symbols_from_list(tickers_list_id), indent=2, sort_keys=True))
+        if validate_tickers_list_id(tickers_list_id):
+            print(json.dumps(trading_view.get_symbols(tickers_list_id), indent=2, sort_keys=True))
         else:
             print('You set incorrect list ID! Please check it and try again.')
 
@@ -75,12 +75,16 @@ def working_with_args():
 
         if not sys.stdin.isatty():
             valid_list = []
-            for ticker in json.load(sys.stdin):
-                if validate_format(ticker):
-                    valid_list.append(ticker)
-                else:
-                    valid_list.append(trading_view.repair_ticker_format(ticker))
-            trading_view.add_tickers(valid_list)
+            tickers_list_id = cli_args().set
+            if validate_tickers_list_id(tickers_list_id):
+                for ticker in json.load(sys.stdin):
+                    if validate_format(ticker):
+                        valid_list.append(ticker)
+                    else:
+                        valid_list.append(repair_ticker_format(ticker))
+                trading_view.add_tickers(tickers_list_id, valid_list)
+            else:
+                print('You set incorrect list ID! Please check it and try again.')
         else:
             print(
                 f"{b_colors.FAIL}Warning: \nNo any tickers have not found ! Please use -h for help and try again.{b_colors.ENDC} "
@@ -92,7 +96,7 @@ def working_with_args():
         """
 
         tickers_list_id = cli_args().free
-        if validate_tickerslist_id(tickers_list_id):
+        if validate_tickers_list_id(tickers_list_id):
             trading_view.free_all_tickers(tickers_list_id)
         else:
             print('You set incorrect list ID! Please check it and try again.')

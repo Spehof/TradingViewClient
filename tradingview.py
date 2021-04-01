@@ -21,7 +21,7 @@ class TradingView:
     """
 
     def __init__(self):
-
+        # TODO tickers list repaer in subclass
         self.url_all_tickers_list: str = 'https://www.tradingview.com/api/v1/symbols_list/all/'
         self.url_curr_tickers: str = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
         self.url_adding: str = 'https://www.tradingview.com/api/v1/symbols_list/colored/red/append/'
@@ -62,14 +62,18 @@ class TradingView:
         return symbols_list_filled
 
     def get_symbols_list(self, name: str) -> SymbolsList:
-        return self.symbols_list.get(name)
+        if self.symbols_list.get(name):
+            list = self.symbols_list.get(name)
+        else:
+            raise TickersListNotExist("Tickers list not found! NAME: " + name)
+        return list
 
     def get_symbols_list(self, list_id: int) -> SymbolsList:
         for curr_symbol_list in self.symbols_list:
             if curr_symbol_list.get_id() == list_id:
                 return curr_symbol_list
-            else:
-                raise TickersListNotExist("Tickers list not found! ID: " + str(list_id))
+        else:
+            raise TickersListNotExist("Tickers list not found! ID: " + str(list_id))
 
     def get_symbols_list_name(self, list_id: int) -> str:
         for symbols_list in self.symbols_list:
@@ -78,12 +82,16 @@ class TradingView:
             else:
                 raise TickersListNotExist("Tickers list not found! ID: " + str(list_id))
 
-    def get_symbols_from_list(self, list_id: int) -> list:
-        for symbols_list in self.symbols_list:
-            if symbols_list.get_id() == list_id:
-                return symbols_list.get_tickers()
+    def get_symbols(self, list_id: int) -> list:
+        return self.get_symbols_list(list_id).get_tickers()
 
-    def __ticker_search(self, ticker: str):
+    def add_tickers(self, list_id: int, tickers: list):
+        self.get_symbols_list(list_id).add_tickers(tickers)
+
+    def del_tickers(self, list_id: int, tickers: list):
+        self.get_symbols_list(list_id).delete_tickers(tickers)
+
+    def ticker_search(self, ticker: str):
         """
         ticker - ticker in string format for search
         return - list suggestion  in format - exchange:symbol
@@ -103,19 +111,6 @@ class TradingView:
             return []
 
     # TODO move this in tickers subclass
-    def add_tickers(self, tickers: list):
-        """
-        Add given tickers list to account.
-        tickers - list tickers with format exchange:symbol
-        exp: add_tickers(["OANDA:XAUUSD", "BITSTAMP:BTCUSD"])
-        """
-
-        add_response = requests.post(self.url_adding, headers=self.headers, data=json.dumps(tickers))
-        if add_response.status_code == 200:
-            print(add_response.text)
-        else:
-            raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
-                add_response.status_code) + '\nPlease use -h for help and try again.')
 
     def free_all_tickers(self, list_id: int):
         """
@@ -127,31 +122,10 @@ class TradingView:
         if ansver == 'Y':
             print(b_colors.OKGREEN + "Deleting shares from list " + self.get_symbols_list_name(
                 list_id) + "..." + b_colors.ENDC)
-            current_tickers: list = self.get_symbols_from_list(list_id)
-            self.get_symbols_list(list_id).delete_tickers(current_tickers)
+            self.del_tickers(list_id, self.get_symbols(list_id))
             print(b_colors.OKGREEN + "All pass good! You dashboard cleaned." + b_colors.ENDC)
         if ansver == 'n':
             print(b_colors.FAIL + "Deleting interrupted!" + b_colors.ENDC)
-
-    def repair_ticker_format(self, invalid_ticker: str):
-        """
-        Get invalid ticker.
-        Return suggested valid ticker format.
-        """
-
-        if tconfig.exist(invalid_ticker):
-            print(b_colors.OKGREEN + 'Ticker ' + invalid_ticker + ' found in config' + b_colors.ENDC)
-            return tconfig.get_value(invalid_ticker)
-        else:
-            print(b_colors.OKCYAN + 'Ticker ' + invalid_ticker + ' getting request' + b_colors.ENDC)
-            suggested_ticker = self.__ticker_search(invalid_ticker)
-            time.sleep(0.5)
-            if suggested_ticker:
-                tconfig.write(invalid_ticker, suggested_ticker[0])
-                return suggested_ticker[0]
-            else:
-                print("SOMETHING WITH REQUEST REPAIRED TICKERS")
-                return ''
 
     def restore_tickers_list(self, tickers: list, invalid_tickers: list):
         """
