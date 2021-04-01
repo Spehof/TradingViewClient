@@ -17,7 +17,7 @@ For validate requirements tickers format
 tradingView = TradingView()
 
 
-def validate_format(ticker: list):
+def validate_format(ticker: str):
     valid_tickers_pattern = re.compile("[A-Z]+:[A-Z]+")
     if valid_tickers_pattern.match(ticker):
         print(b_colors.WARNING + 'VALID TICKER => ' + ticker + b_colors.ENDC)
@@ -33,6 +33,7 @@ def validate_tickers_list_id(list_id: int):
             return True
     else:
         return False
+
 
 def repair_ticker_format(invalid_ticker: str):
     """
@@ -51,5 +52,5 @@ def repair_ticker_format(invalid_ticker: str):
             tconfig.write(invalid_ticker, suggested_ticker[0])
             return suggested_ticker[0]
         else:
-            raise TickerSearchException(f'Warning: \nSomething with ticker_search goes wrong! Response status: ' + str(
-                suggested_ticker.status_code) + '\nPlease use -h for help and try again.')
+            raise TickerSearchException(f'Warning: Something with ticker_search goes wrong!\n'
+                                        f'suggested_ticker from ticker_search = 0')
