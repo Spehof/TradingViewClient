@@ -3,6 +3,7 @@ from enum import Enum
 import requests
 from requests.exceptions import InvalidURL
 from cookieLoader import get_cookie
+from customException import DeleteTickerException, AddTickerException, GetListInfoException
 
 ListType = Enum('custom', 'colored')
 
@@ -72,8 +73,12 @@ class SymbolsList:
             """
             # print(del_response.text)
         else:
-            raise InvalidURL(f'Warning: \nSomething with deleting tickers goes wrong! Response status: ' + str(
-                del_response.status_code) + '\nPlease use -h for help and try again.')
+            raise DeleteTickerException(
+                f'Warning: \nSomething with deleting tickers in tickers list: {self.get_name()} '
+                f'ID: {self.get_id()} \ngoes wrong!'
+                f'Request URL: {self.__URL_remove}'
+                f' Response status code:'
+                f'{str(del_response.status_code)}  \nPlease use -h for help and try again.')
 
     def add_tickers(self, tickers: list):
         """
@@ -86,8 +91,11 @@ class SymbolsList:
         if add_response.status_code == 200:
             print(add_response.text)
         else:
-            raise InvalidURL(f'Warning: \nSomething goes wrong! Response status: ' + str(
-                add_response.status_code) + '\nPlease use -h for help and try again.')
+            raise AddTickerException(f'Warning: \nSomething with adding tickers in tickers list: {self.get_name()} '
+                                     f'ID: {self.get_id()} \ngoes wrong!'
+                                     f'Request URL: {self.__URL_append}'
+                                     f' Response status code:'
+                                     f'{str(add_response.status_code)}  \nPlease use -h for help and try again.')
 
     def __get_list_info(self):
         responce_lists_info = requests.get(self.ALL_LISTS_URL, headers=self.headers)
@@ -96,7 +104,7 @@ class SymbolsList:
                 if self.__id == list_info['id']:
                     return list_info
         else:
-            raise InvalidURL('Some problem with getting tickers_list_data for tickers list: ' + self.__name)
+            raise GetListInfoException('Some problem with getting tickers_list_data for tickers list ID: ' + self.__id)
 
     def __create_URL(self) -> str:
         if self.__type == 'colored':
