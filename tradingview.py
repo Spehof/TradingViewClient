@@ -21,7 +21,8 @@ class TradingView:
     """
 
     def __init__(self):
-        # TODO tickers list repaer in subclass
+        # TODO tickers list repair in subclass
+        # TODO tickers search in subclass
         self.url_all_tickers_list: str = 'https://www.tradingview.com/api/v1/symbols_list/all/'
         self.url_curr_tickers: str = 'https://ru.tradingview.com/api/v1/symbols_list/active/'
         self.url_adding: str = 'https://www.tradingview.com/api/v1/symbols_list/colored/red/append/'
@@ -109,8 +110,6 @@ class TradingView:
             return tickers_resp
         else:
             return []
-
-    # TODO move this in tickers subclass
 
     def free_all_tickers(self, list_id: int):
         """
