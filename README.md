@@ -1,7 +1,7 @@
 ## App for add or remove tickers lists in TradingView.com
 Good working with my another project - SharesParser (tickers parser for finviz.com)
 
-### Get started
+### Instalation
 1. Cloning this repo
    ``git clone https://github.com/Spehof/TradingViewClient.git ``
 2. Install requirements
