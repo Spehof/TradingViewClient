@@ -26,5 +26,20 @@ Good working with my another project - SharesParser (tickers parser for finviz.c
 * If the program finds tickers in this file, then get exchange from file (you can specify exchange for any tickers in this file)
 * if the program not finds tickers in this file, then doing get request to TradingView and get first element from answer tickers array and write this in ``tconfig.json``
 
-### For example
+## Examples
+#### My ticker lists  
 
+
+![img_2.png](img_2.png)
+
+#### Backup all tickers from list 
+
+![img_3.png](img_3.png)
+
+#### Set tickers from ``STDIN`` to list 
+
+![img_4.png](img_4.png)
+
+#### Delete all tickers from list 
+
+![img_5.png](img_5.png)
