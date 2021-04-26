@@ -30,18 +30,18 @@ Good working with my another project - SharesParser (tickers parser for finviz.c
 #### My ticker lists  
 
 
-![img_2.png](img_2.png)
+![img_2.png](images/img_2.png)
 
 #### Backup all tickers from list 
 
-![img_3.png](img_3.png)
+![img_3.png](images/img_3.png)
 
 #### Set tickers from ``STDIN`` to list 
 
-![img_4.png](img_4.png)
+![img_4.png](images/img_4.png)
 
 #### Delete all tickers from list 
 
-![img_5.png](img_5.png)
+![img_5.png](images/img_5.png)
 
 Feel free for remarks, addendum and ideas for improving!
