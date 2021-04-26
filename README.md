@@ -43,3 +43,5 @@ Good working with my another project - SharesParser (tickers parser for finviz.c
 #### Delete all tickers from list 
 
 ![img_5.png](img_5.png)
+
+Feel free for remarks, addendum and ideas for improving!
