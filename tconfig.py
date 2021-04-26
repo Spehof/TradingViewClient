@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import json
+import sys
+
 from colors import b_colors
 
 tickers_list: dict = {}
@@ -10,7 +12,7 @@ tickers_list: dict = {}
 def load_from_file():
     global tickers_list
     try:
-        with open('tconfig.json') as f:
+        with open(sys.path[0] + '/tconfig.json') as f:
             tickers_list = json.load(f)
     except IOError:
         print(b_colors.FAIL + "File tconfig not accessible! Please check file: tconfig.json" + b_colors.ENDC)
@@ -19,7 +21,7 @@ def load_from_file():
 
 
 def save():
-    with open('tconfig.json', 'w') as f:
+    with open(sys.path[0] + '/tconfig.json', 'w') as f:
         json.dump(tickers_list, f, indent=2, sort_keys=True)
 
 

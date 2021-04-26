@@ -30,10 +30,9 @@ class SymbolsList:
 
     def __init__(self,
                  list_id: int):
-        self.__id: int = list_id
-        # __tickers_list_data = json object with data about list_tickers (for caching data)
-        self.__tickers_list_data = self.__get_list_info()
 
+        self.__id: int = list_id
+        self.__tickers_list_data = self.__get_list_info()
         self.__color: str = self.__tickers_list_data['color']
         self.__active: bool = self.__tickers_list_data['active']
         self.__symbols: list = self.__tickers_list_data['symbols']

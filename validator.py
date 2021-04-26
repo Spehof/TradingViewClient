@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from datetime import time
+import time
 
 import tconfig
 from colors import b_colors
@@ -47,7 +47,7 @@ def repair_ticker_format(invalid_ticker: str):
     else:
         print(b_colors.OKCYAN + 'Ticker ' + invalid_ticker + ' getting request' + b_colors.ENDC)
         suggested_ticker = tradingView.ticker_search(invalid_ticker)
-        time.sleep(0.5)
+        time.sleep(0.2)
         if suggested_ticker:
             tconfig.write(invalid_ticker, suggested_ticker[0])
             return suggested_ticker[0]
