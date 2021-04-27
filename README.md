@@ -13,7 +13,7 @@ Good working with my another project - SharesParser (tickers parser for finviz.c
 ``-l, --list`` get all existing lists tickers information  
 
 ``-b , --backup`` print all tickers from you account to ``STDOUT``
-(usually using with redirection)  
+(usually using with redirection ``STDOUT``)  
 
 ``-s, --set`` set all tickers to of said TradingView symbols list from stdin  
 
