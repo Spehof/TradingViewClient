@@ -1,5 +1,5 @@
 ## App for add or remove tickers lists in TradingView.com
-Good working with my another project - SharesParser (tickers parser for finviz.com)
+Works well with my other app - [SharesParser](https://github.com/Spehof/SharesParser) (tickers parser for finviz.com)
 
 ### Instalation
 1. Cloning this repo
